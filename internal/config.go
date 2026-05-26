@@ -13,21 +13,15 @@ type Config struct {
 	CurrentUserName string `json:"current_user_name"`
 }
 
-const ConfigDir = "gator"
-const ConfigFile = "gator.json"
+const ConfigFile = ".gatorconfig.json"
 
 func getConfigFile() (string, error) {
-	baseDir, err := os.UserConfigDir()
+	baseDir, err := os.UserHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("failed to get user config dir: %w", err)
+		return "", fmt.Errorf("failed to get user home dir: %w", err)
 	}
 
-	configDir := filepath.Join(baseDir, ConfigDir)
-	if err := os.MkdirAll(configDir, 0700); err != nil {
-		return "", fmt.Errorf("failed to create config dir: %w", err)
-	}
-
-	filePath := filepath.Join(configDir, ConfigFile)
+	filePath := filepath.Join(baseDir, ConfigFile)
 	if _, err := os.Stat(filePath); errors.Is(err, os.ErrNotExist) {
 		file, err := os.Create(filePath)
 		if err != nil {
@@ -52,9 +46,9 @@ func Read() (*Config, error) {
 	config := &Config{}
 	err = json.Unmarshal(data, config)
 	if err != nil {
+		// ignore error since config was bad, we'll just return a fresh config obj
 		return &Config{}, err
 	}
-
 	return config, nil
 }
 
