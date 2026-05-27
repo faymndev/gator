@@ -47,7 +47,7 @@ func Read() (*Config, error) {
 	err = json.Unmarshal(data, config)
 	if err != nil {
 		// ignore error since config was bad, we'll just return a fresh config obj
-		return &Config{}, err
+		return &Config{}, nil
 	}
 	return config, nil
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	config "github.com/faymndev/gator/internal"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -17,6 +18,14 @@ func main() {
 	s := state{cfg: cfg}
 
 	commands := newCommands()
+
+	commands.register("init", func(s *state, cmd command) error {
+		cfg.CurrentUserName = "faymn"
+		cfg.DbUrl = "postgres://postgres:postgres@localhost:5432/gator?sslmode=disable"
+		cfg.Write()
+		return nil
+	})
+
 	commands.register("login", func(s *state, cmd command) error {
 		if len(cmd.args) == 0 {
 			return errors.New("expected username")
