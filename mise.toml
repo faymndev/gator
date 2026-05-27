@@ -1,0 +1,11 @@
+[tasks.db_migrations]
+description = "Run up migrations"
+run = "goose -dir ./sql/schema postgres \"postgres://postgres:postgres@localhost:5432/gator?sslmode=disable\" up"
+
+[tasks.db_migrations_down]
+description = "Run down migrations"
+run = "goose -dir ./sql/schema postgres \"postgres://postgres:postgres@localhost:5432/gator?sslmode=disable\" down"
+
+[tasks.db_generate]
+description = "Generate database bindings"
+run = "sqlc generate"
