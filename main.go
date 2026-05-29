@@ -27,6 +27,7 @@ func main() {
 	commands.Register("login", command.LoginUser)
 	commands.Register("users", command.ListUsers)
 	commands.Register("reset", command.ResetDatabase)
+	commands.Register("agg", command.Aggregate)
 
 	// execute command
 	state := command.State{Cfg: cfg, Db: database.New(db)}

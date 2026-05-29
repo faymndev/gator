@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/faymndev/gator/internal/database"
+	"github.com/faymndev/gator/internal/feed"
 	"github.com/google/uuid"
 )
 
@@ -80,5 +81,15 @@ func ResetDatabase(s *State, cmd Command) error {
 	if err != nil {
 		return fmt.Errorf("failed to reset database: %w", err)
 	}
+	return nil
+}
+
+func Aggregate(s *State, cmd Command) error {
+	feed, err := feed.FetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
+	if err != nil {
+		return fmt.Errorf("failed to fetch feed: %w", err)
+	}
+
+	fmt.Printf("%v", feed)
 	return nil
 }
