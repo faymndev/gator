@@ -6,6 +6,7 @@ import (
 
 	config "github.com/faymndev/gator/internal"
 	"github.com/faymndev/gator/internal/command"
+	"github.com/faymndev/gator/internal/command/methods"
 	"github.com/faymndev/gator/internal/database"
 	_ "github.com/lib/pq"
 )
@@ -22,12 +23,14 @@ func main() {
 	}
 
 	commands := command.NewCommands()
-	commands.Register("init", command.InitConfig)
-	commands.Register("register", command.RegisterUser)
-	commands.Register("login", command.LoginUser)
-	commands.Register("users", command.ListUsers)
-	commands.Register("reset", command.ResetDatabase)
-	commands.Register("agg", command.Aggregate)
+	commands.Register("init", methods.InitConfig)
+	commands.Register("register", methods.RegisterUser)
+	commands.Register("login", methods.LoginUser)
+	commands.Register("users", methods.ListUsers)
+	commands.Register("reset", methods.ResetDatabase)
+	commands.Register("agg", methods.Aggregate)
+	commands.Register("addfeed", methods.AddFeed)
+	commands.Register("feeds", methods.ListFeeds)
 
 	// execute command
 	state := command.State{Cfg: cfg, Db: database.New(db)}

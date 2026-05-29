@@ -2,7 +2,7 @@ package feed
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"html"
 	"io"
@@ -46,7 +46,7 @@ func FetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 	}
 
 	feed := &RSSFeed{}
-	err = json.Unmarshal(data, feed)
+	err = xml.Unmarshal(data, feed)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}

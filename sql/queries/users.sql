@@ -11,5 +11,3 @@ limit 1;
 -- name: GetUsers :many
 select * from users;
 
--- name: Reset :exec 
-delete from users;
