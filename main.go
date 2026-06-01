@@ -29,10 +29,11 @@ func main() {
 	commands.Register("users", methods.ListUsers)
 	commands.Register("reset", methods.ResetDatabase)
 	commands.Register("agg", methods.Aggregate)
-	commands.Register("addfeed", methods.AddFeed)
+	commands.Register("addfeed", command.MiddlewareLoggedIn(methods.AddFeed))
 	commands.Register("feeds", methods.ListFeeds)
-	commands.Register("follow", methods.FollowFeed)
-	commands.Register("following", methods.ListFollowing)
+	commands.Register("follow", command.MiddlewareLoggedIn(methods.FollowFeed))
+	commands.Register("unfollow", command.MiddlewareLoggedIn(methods.UnfollowFeed))
+	commands.Register("following", command.MiddlewareLoggedIn(methods.ListFollowing))
 
 	// execute command
 	state := command.State{Cfg: cfg, Db: database.New(db)}

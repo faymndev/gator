@@ -21,17 +21,12 @@ func Aggregate(s *command.State, cmd command.Command) error {
 	return nil
 }
 
-func AddFeed(s *command.State, cmd command.Command) error {
+func AddFeed(s *command.State, cmd command.Command, user database.User) error {
 	if len(cmd.Args) != 2 {
 		return errors.New("must provide a name and a url")
 	}
 
 	ctx := context.Background()
-
-	user, err := s.Db.GetUser(ctx, s.Cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("failed to get current user: %w", err)
-	}
 
 	feed, err := s.Db.CreateFeed(ctx, database.CreateFeedParams{
 		ID:     uuid.New(),
@@ -70,4 +65,3 @@ func ListFeeds(s *command.State, cmd command.Command) error {
 
 	return nil
 }
-

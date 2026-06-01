@@ -9,17 +9,12 @@ import (
 	"github.com/faymndev/gator/internal/database"
 )
 
-func FollowFeed(s *command.State, cmd command.Command) error {
+func FollowFeed(s *command.State, cmd command.Command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return errors.New("must provide a url")
 	}
 
 	ctx := context.Background()
-
-	user, err := s.Db.GetUser(ctx, s.Cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("failed to get current user: %w", err)
-	}
 
 	feed, err := s.Db.GetFeedByUrl(ctx, cmd.Args[0])
 	if err != nil {
@@ -38,15 +33,25 @@ func FollowFeed(s *command.State, cmd command.Command) error {
 	return nil
 }
 
-func ListFollowing(s *command.State, cmd command.Command) error {
-	ctx := context.Background()
-
-	user, err := s.Db.GetUser(ctx, s.Cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("failed to get current user: %w", err)
+func UnfollowFeed(s *command.State, cmd command.Command, user database.User) error {
+	if len(cmd.Args) != 1 {
+		return errors.New("must provide a feed url")
 	}
 
-	feeds , err := s.Db.GetFollowing(ctx, user.ID)
+	if err := s.Db.UnfollowFeedUrl(context.Background(), database.UnfollowFeedUrlParams{
+		UserID: user.ID,
+		Url:    cmd.Args[0],
+	}); err != nil {
+		return fmt.Errorf("failed to unfollow feed by url: %w", err)
+	}
+
+	return nil
+}
+
+func ListFollowing(s *command.State, cmd command.Command, user database.User) error {
+	ctx := context.Background()
+
+	feeds, err := s.Db.GetFollowing(ctx, user.ID)
 	if err != nil {
 		return fmt.Errorf("failed to get follows: %w", err)
 	}

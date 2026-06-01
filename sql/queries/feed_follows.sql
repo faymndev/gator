@@ -9,6 +9,13 @@ from inserted_feed_follow
 inner join users on inserted_feed_follow.user_id = users.id
 inner join feeds on inserted_feed_follow.feed_id = feeds.id;
 
+-- name: UnfollowFeedUrl :exec
+delete from feed_follows
+where feed_follows.user_id = $1 and feed_follows.feed_id =  (
+  select id from feeds
+  where feeds.url = $2
+);
+ 
 -- name: GetFollowing :many
 select feed_follows.user_id as user_id, feeds.* from feed_follows
 inner join feeds on feed_follows.feed_id = feeds.id
