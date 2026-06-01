@@ -43,6 +43,14 @@ func AddFeed(s *command.State, cmd command.Command) error {
 		return fmt.Errorf("failed to create feed: %w", err)
 	}
 
+	_, err = s.Db.CreateFeedFollow(ctx, database.CreateFeedFollowParams{
+		UserID: user.ID,
+		FeedID: feed.ID,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create feed follow: %w", err)
+	}
+
 	fmt.Printf("%+v\n", feed)
 	return nil
 }
@@ -62,3 +70,4 @@ func ListFeeds(s *command.State, cmd command.Command) error {
 
 	return nil
 }
+

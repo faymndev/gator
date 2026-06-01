@@ -26,7 +26,9 @@ func RegisterUser(s *command.State, cmd command.Command) error {
 	}
 
 	s.Cfg.CurrentUserName = user.Name
-	s.Cfg.Write()
+	if err := s.Cfg.Write(); err != nil {
+		return fmt.Errorf("failed to save login username: %w", err)
+	}
 
 	fmt.Printf("created user %+v\n", user)
 

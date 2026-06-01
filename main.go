@@ -31,6 +31,8 @@ func main() {
 	commands.Register("agg", methods.Aggregate)
 	commands.Register("addfeed", methods.AddFeed)
 	commands.Register("feeds", methods.ListFeeds)
+	commands.Register("follow", methods.FollowFeed)
+	commands.Register("following", methods.ListFollowing)
 
 	// execute command
 	state := command.State{Cfg: cfg, Db: database.New(db)}
