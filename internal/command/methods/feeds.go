@@ -2,8 +2,10 @@ package methods
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/faymndev/gator/internal/command"
 	"github.com/faymndev/gator/internal/database"
@@ -12,13 +14,33 @@ import (
 )
 
 func Aggregate(s *command.State, cmd command.Command) error {
-	feed, err := feed.FetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
-	if err != nil {
-		return fmt.Errorf("failed to fetch feed: %w", err)
-	}
+	ctx := context.Background()
 
-	fmt.Printf("%+v\n", feed)
-	return nil
+	duration, _ := time.ParseDuration("1m")
+	ticker := time.NewTicker(duration)
+	fmt.Printf("Collecting feeds every %s\n", duration)
+	for ; ; <-ticker.C {
+		next_feed, err := s.Db.GetNextFeedToFetch(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to fetch next feed: %w", err)
+		}
+
+		rss_feed, err := feed.FetchFeed(ctx, next_feed.Url)
+		fmt.Printf("%s\n", rss_feed.Channel.Title)
+		for _, item := range rss_feed.Channel.Item {
+			fmt.Printf("- %s\n", item.Title)
+		}
+
+		updated_at := time.Now().UTC()
+		err = s.Db.MarkFeedFetched(ctx, database.MarkFeedFetchedParams{
+			LastFetchedAt: sql.NullTime{Time: updated_at},
+			UpdatedAt:     updated_at,
+			ID:            next_feed.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to mark feed as fetched: %w", err)
+		}
+	}
 }
 
 func AddFeed(s *command.State, cmd command.Command, user database.User) error {

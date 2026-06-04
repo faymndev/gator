@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -55,19 +56,20 @@ func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowPara
 }
 
 const getFollowing = `-- name: GetFollowing :many
-select feed_follows.user_id as user_id, feeds.id, feeds.created_at, feeds.updated_at, feeds.name, feeds.url, feeds.user_id from feed_follows
+select feed_follows.user_id as user_id, feeds.id, feeds.created_at, feeds.updated_at, feeds.name, feeds.url, feeds.user_id, feeds.last_fetched_at from feed_follows
 inner join feeds on feed_follows.feed_id = feeds.id
 where feed_follows.user_id = $1
 `
 
 type GetFollowingRow struct {
-	UserID    uuid.UUID
-	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Name      string
-	Url       string
-	UserID_2  uuid.UUID
+	UserID        uuid.UUID
+	ID            uuid.UUID
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Name          string
+	Url           string
+	UserID_2      uuid.UUID
+	LastFetchedAt sql.NullTime
 }
 
 func (q *Queries) GetFollowing(ctx context.Context, userID uuid.UUID) ([]GetFollowingRow, error) {
@@ -87,6 +89,7 @@ func (q *Queries) GetFollowing(ctx context.Context, userID uuid.UUID) ([]GetFoll
 			&i.Name,
 			&i.Url,
 			&i.UserID_2,
+			&i.LastFetchedAt,
 		); err != nil {
 			return nil, err
 		}

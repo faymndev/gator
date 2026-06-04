@@ -11,3 +11,13 @@ left join users
 -- name: GetFeedByUrl :one
 select * from feeds
 where feeds.url = $1;
+
+-- name: MarkFeedFetched :exec
+update feeds
+set last_fetched_at = $1, updated_at = $2 
+where feeds.id = $3;
+
+-- name: GetNextFeedToFetch :one
+select * from feeds
+order by feeds.last_fetched_at asc nulls first
+limit 1;
