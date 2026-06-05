@@ -34,6 +34,7 @@ func main() {
 	commands.Register("follow", command.MiddlewareLoggedIn(methods.FollowFeed))
 	commands.Register("unfollow", command.MiddlewareLoggedIn(methods.UnfollowFeed))
 	commands.Register("following", command.MiddlewareLoggedIn(methods.ListFollowing))
+	commands.Register("browse", command.MiddlewareLoggedIn(methods.Browse))
 
 	// execute command
 	state := command.State{Cfg: cfg, Db: database.New(db)}
